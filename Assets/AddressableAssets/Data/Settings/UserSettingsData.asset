@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 819f8e5d05b47364eae1764edcfa4042, type: 3}
+  m_Name: UserSettingsData
+  m_EditorClassIdentifier: 
+  UserSettingItems:
+  - Title: MusicOn
+    SettingName: MusicOn
+    Type: 0
+    MinValue: 0
+    MaxValue: 0
+    IncrementSize: 0
+    CustomSettingItemPrefab: {fileID: 0}
+    SubSettings: []
+  - Title: SoundOn
+    SettingName: SoundOn
+    Type: 0
+    MinValue: 0
+    MaxValue: 0
+    IncrementSize: 0
+    CustomSettingItemPrefab: {fileID: 0}
+    SubSettings: []

@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: UI
+  m_EditorClassIdentifier: 
+  m_GroupName: UI
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 9efa0250814089748bed041242be0412
+  m_SerializeEntries:
+  - m_GUID: 8835dc5c800c1244894163d338e37e98
+    m_Address: DefaultLayer
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 60abbb6dd1bebb342a5b9f964e3db293
+    m_Address: HUDScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 477bc2e5390fe1d4ea8b7f1f4fcd9e92
+    m_Address: LoadingScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 40ab59e05db5481428ecb12f16f8a9f9
+    m_Address: MainMenuScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: c0aa988a031f8a84ea089eaf0d601d2e
+    m_Address: SettingsScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 4419918f5cb69094b8146008d43234d5
+    m_Address: TransitionScreen
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d46a73dadc707cf45956416bf3523339
+    m_Address: ButtonWidget
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: b6e3a8dd36b7cdf4aa7acd986cebbd76
+    m_Address: LoadingIconWidget
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 2aa838351d37a48479920b76891e8edb
+    m_Address: ProgressBarWidget
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 468205beca0737f4796a32a9a05e091d
+    m_Address: SettingItemSlider
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 957278e3c5c619043be66a47712a10de
+    m_Address: SettingItemToggle
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 73513df5f58a5fc44998f791949d38ba, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: cb0ff636d93795e46a99a21e289537de, type: 2}
+    - {fileID: 11400000, guid: 0571a0c1b55da2b4d8cd6f3b2017e5ac, type: 2}
