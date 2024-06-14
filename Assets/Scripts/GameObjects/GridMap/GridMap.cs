@@ -248,15 +248,10 @@ public class GridMap : MonoSingleton<GridMap>
         }
     }
 
-    public void Reset()
+    public void ResetMap()
     {
         InitializeBlocks();
         //must reset all the game status, otherwise can cause problems when calculating the winning states
-        InitializeSnakes().Forget();
-    }
-    public void ClearSnakes()
-    {
-
     }
     public void ClearBlocks()
     {
