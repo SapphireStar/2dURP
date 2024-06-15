@@ -32,6 +32,8 @@ public class GridMap : MonoSingleton<GridMap>
     [SerializeField]
     private GameObject m_snakePrefab;
 
+    public bool MapInitializeCompleted;
+
     private float m_width;
     private float m_height;
     private int m_widthSteps;
@@ -73,7 +75,7 @@ public class GridMap : MonoSingleton<GridMap>
         m_blocks = new List<GameObject>();
 
         LoadMap();
-        Initialize();
+        StartCoroutine(Initialize());
     }
     private void Update()
     {
@@ -111,7 +113,7 @@ public class GridMap : MonoSingleton<GridMap>
         int map = UnityEngine.Random.Range((int)0, (int)datas.Count);
         return datas[map];
     }
-    public void Initialize()
+/*    public void Initialize()
     {
         //use boxcollider to determin the size of the map
         BoxCollider2D collider = GetComponent<BoxCollider2D>();
@@ -126,6 +128,24 @@ public class GridMap : MonoSingleton<GridMap>
         InitializeBlocks();
         InitializeBlockSprites();
         InitializeSnakes().Forget();
+    }*/
+
+    IEnumerator Initialize()
+    {
+        //use boxcollider to determin the size of the map
+        BoxCollider2D collider = GetComponent<BoxCollider2D>();
+        m_minX = collider.bounds.min.x;
+        m_minY = collider.bounds.min.y;
+        m_width = collider.bounds.max.x - collider.bounds.min.x;
+        m_height = collider.bounds.max.y - collider.bounds.min.y;
+        m_stepX = m_width / m_widthSteps;
+        m_stepY = m_height / m_heightSteps;
+
+        InitializePoints();
+        InitializeBlocks();
+        InitializeBlockSprites();
+        MapInitializeCompleted = true;
+        yield return null;
     }
     private void InitializePoints()
     {
@@ -191,6 +211,8 @@ public class GridMap : MonoSingleton<GridMap>
 
         return new Point(Mathf.RoundToInt(dragPos.x), Mathf.RoundToInt(dragPos.y));
     }
+
+    
 
     public bool CheckMovePointAvailable(Point p)
     {
