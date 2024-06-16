@@ -9,12 +9,8 @@ using UnityEngine.EventSystems;
 public enum GridState
 {
     None = 0,
-    Snake = 1,
-    Yellow = 2,
-    Green = 4,
-    Red = 8,
-    Blue = 16,
-    Wall = 32,
+    Obstacle = 1,
+
 }
 public class GridMap : MonoSingleton<GridMap>
 {
@@ -241,7 +237,15 @@ public class GridMap : MonoSingleton<GridMap>
         {
             return state;
         }
-        return GridState.Wall;
+        return GridState.Obstacle;
+    }
+    public bool IsObstacle(GridState state)
+    {
+        if((state & GridState.Obstacle) > 0)
+        {
+            return true;
+        }
+        return false;
     }
     public void MinusPointState(Point p, GridState state)
     {

@@ -31,24 +31,6 @@ namespace Isekai.UI.Models
 
             return true;
         }
-        protected bool ChangePropertyAndNotify<T>(T currentValue, T newValue, [CallerMemberName] string propertyName = null)
-        {
-            if (newValue == null && currentValue == null)
-            {
-                return false;
-            }
-
-            if (newValue != null && newValue.Equals(currentValue))
-            {
-                return false;
-            }
-
-            currentValue = newValue;
-
-            RaisePropertyChanged(propertyName, newValue);
-
-            return true;
-        }
 
         protected virtual void RaisePropertyChanged(string propertyName, object value = null)
         {

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseTurnBasedCharacter : MonoBehaviour
+public abstract class BaseTurnBasedCharacter : MonoBehaviour
 {
     #region Path_Finding
     [SerializeField]
@@ -12,16 +12,13 @@ public class BaseTurnBasedCharacter : MonoBehaviour
     protected Vector3 m_curPos;
     #endregion
 
+    #region Model
+    
+    #endregion
+
     #region Turn_Base
-    private bool inTurn;
-    public bool InTurn
-    {
-        get => inTurn;
-        set
-        {
-            inTurn = value;
-        }
-    }
+
+
     #endregion
     // Start is called before the first frame update
     void Start()
@@ -52,11 +49,28 @@ public class BaseTurnBasedCharacter : MonoBehaviour
             }
         }
     }
+    public virtual void Initialize()
+    {
+
+    }
+
+
+    #region Turn_Based_System
+
+    public abstract void OnTurnStart();
+    public abstract void OnTurnEnd();
+
+    public virtual void EndTurn()
+    {
+        TurnManager.Instance.EndTurn();
+    }
+    #endregion
+    #region Path_Finding
     public void SetGridMap(GridMap map)
     {
         m_gridMap = map;
     }
-    protected IEnumerator MoveTo(Vector3 targetPos)
+    protected virtual IEnumerator MoveTo(Vector3 targetPos)
     {
         m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
         //transform.position = m_gridMap.GetPositionViaPoint(m_curPoint);
@@ -64,7 +78,7 @@ public class BaseTurnBasedCharacter : MonoBehaviour
         yield return StartCoroutine(RapidMove(stack));
 
     }
-    IEnumerator RapidMove(Stack<Point> pathStack)
+    protected virtual IEnumerator RapidMove(Stack<Point> pathStack)
     {
         while(pathStack.Count>0)
         {
@@ -77,13 +91,20 @@ public class BaseTurnBasedCharacter : MonoBehaviour
 
     }
 
-    public bool CheckGridAvailable(Point target)
+    protected virtual bool CheckGridAvailable(Point target)
     {
+        bool res = true; 
         if(target.X<0||target.Y<0||target.X>m_gridMap.StepWidth-1||target.Y>m_gridMap.StepHeight-1)
         {
-            return false;
+            res &= false;
         }
-        return true;
+
+        if(m_gridMap.IsObstacle(m_gridMap.GetPointState(target)))
+        {
+            res &= false;
+        }
+
+        return res;
     }
 
     HashSet<Point> traversedNodes;
@@ -245,3 +266,4 @@ public class BFSTree
         Children = new List<BFSTree>();
     }
 }
+#endregion
