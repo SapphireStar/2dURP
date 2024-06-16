@@ -4,15 +4,40 @@ using UnityEngine;
 
 public class AttackComponent : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public GridMap gridMap;
+    private BaseTurnBasedCharacter character;
+    public void Start()
     {
-        
+        character = GetComponent<BaseTurnBasedCharacter>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetSkill()
     {
-        
+
+    }
+
+    public void CalculateValue()
+    {
+
+    }
+
+    public void DisplayRange()
+    {
+
+    }
+
+    public void SetTarget()
+    {
+
+    }
+
+    public void PlaySkillDemo()
+    {
+
+    }
+
+    public void ApplySkillEffect()
+    {
+
     }
 }

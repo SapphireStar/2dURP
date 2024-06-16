@@ -6,6 +6,8 @@ public class TurnManager : MonoSingleton<TurnManager>
 {
     [SerializeField]
     private List<BaseTurnBasedCharacter> turnObjects;
+    [SerializeField]
+    private GridMap gridMap;
 
     private TurnModel turnModel;
     // Start is called before the first frame update
@@ -36,7 +38,13 @@ public class TurnManager : MonoSingleton<TurnManager>
         
     }
 
+    private void UpdateTurnObjectsPos()
+    {
+        foreach (var item in turnObjects)
+        {
 
+        }
+    }
 
 }
 
