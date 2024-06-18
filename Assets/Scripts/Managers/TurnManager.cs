@@ -9,10 +9,19 @@ public class TurnManager : MonoSingleton<TurnManager>
     [SerializeField]
     private GridMap gridMap;
 
+    private Dictionary<Point, BaseTurnBasedCharacter> turnObjectsPointsDictionary;
+    [SerializeField]
+    private PlayerTurnBasedController player;
+    public PlayerTurnBasedController Player
+    {
+        get => player;
+    }
+
     private TurnModel turnModel;
     // Start is called before the first frame update
     void Start()
     {
+        turnObjectsPointsDictionary = new Dictionary<Point, BaseTurnBasedCharacter>();
         turnModel = ModelManager.Instance.GetModel<TurnModel>(typeof(TurnModel));
         TurnStart();
     }
@@ -35,16 +44,24 @@ public class TurnManager : MonoSingleton<TurnManager>
         turnModel.Order++;
         int curOrder = turnModel.Order % turnObjects.Count;
         turnObjects[curOrder].OnTurnStart();
-        
-    }
 
+        UpdateTurnObjectsPos();
+    }
+    /// <summary>
+    /// Update all TurnObjects' point pos for using by attack system 
+    /// </summary>
     private void UpdateTurnObjectsPos()
     {
-        foreach (var item in turnObjects)
+        turnObjectsPointsDictionary.Clear();
+        foreach (var turnObject in turnObjects)
         {
-
+            turnObjectsPointsDictionary[turnObject.CurPoint] = turnObject;
         }
     }
 
+    public void TryGetTurnObject(Point point, out BaseTurnBasedCharacter target)
+    {
+        turnObjectsPointsDictionary.TryGetValue(point, out target);
+    }
 }
 

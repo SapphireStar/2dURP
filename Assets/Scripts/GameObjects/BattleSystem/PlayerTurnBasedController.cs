@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using MyPackage;
 using UnityEngine;
 
+public enum PlayerStates
+{
+    Idle,
+    Moving,
+    Attacking,
+}
 public class PlayerTurnBasedController : BaseTurnBasedCharacter
 {
     public LineRenderer MouseHoverRouteRenderer;
@@ -20,21 +26,16 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     }
     void Start()
     {
-        
+        m_curPos = transform.position;
+        m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
     }
 
-    float timer = 0.05f;
+    
     // Update is called once per frame
     void Update()
     {
-
-        timer -= Time.deltaTime;
-        if (timer <= 0)
-        {
-            timer = 0.05f;
-            MouseHoverRoute();
-        }
-        ClickMove();
+        Movement();
+        ClickUseSkill();
     }
     public override void Initialize()
     {
@@ -42,10 +43,31 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         m_curPoint = new Point(1, 1);
         m_curPos = m_gridMap.GetPositionViaPoint(m_curPoint);
 
+        m_attackComponent = GetComponent<AttackComponent>();
+
         InitializeModels();
     }
 
     #region Player_Behavior
+
+    [SerializeField]
+    float BFSInterval = 0.05f;
+    float timer = 0;
+    private void Movement()
+    {
+        if(playerStatsModel.PlayerState != PlayerStates.Moving)
+        {
+            ClearMouseHoverRoute();
+            return;
+        }
+        timer -= Time.deltaTime;
+        if (timer <= 0)
+        {
+            timer = BFSInterval;
+            MouseHoverRoute();
+        }
+        ClickMove();
+    }
     private void ClickMove()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
@@ -75,6 +97,41 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
             StartCoroutine(MoveTo(mousePos));
         }
     }
+    private void ClickUseSkill()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            if (playerStatsModel.PlayerState != PlayerStates.Attacking)
+            {
+                return;
+            }
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Point skillTarget = m_gridMap.GetPointViaPosition(mousePos);
+            if (!CheckGridAvailable(m_gridMap.GetPointViaPosition(mousePos)))
+            {
+                Debug.Log("Skill Target is Not available");
+                return;
+            }
+            //Use AttackComponent to use skill
+            m_attackComponent.SetTarget(skillTarget);
+        }
+    }
+
+    public void OnClickMoveButton()
+    {
+        playerStatsModel.PlayerState = PlayerStates.Moving;
+        m_attackComponent.ResetSkill();
+    }
+    public void OnClickSkillButton(SkillData skillData)
+    {
+        //can't attack during moving
+        if (playerStatsModel.IsMoving)
+        {
+            return;
+        }
+        playerStatsModel.PlayerState = PlayerStates.Attacking;
+        SetSkillData(skillData);
+    }
 
     #endregion
 
@@ -99,10 +156,36 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     }
     #endregion
 
+    #region Attack_System
+    public override void SetSkillData(SkillData skillData)
+    {
+        //Click skill button means player want to attack
+        playerStatsModel.PlayerState = PlayerStates.Attacking;
+
+        if (m_attackComponent == null)
+        {
+            Debug.Log("Current Character has no AttackComponent, Set Skill Failed");
+            return;
+        }
+        m_attackComponent.SetSkill(skillData);
+    }
+    protected override void ApplyPhysicalDamage(float damage)
+    {
+
+    }
+
+    protected override void ApplyMagicalDamage(float damage)
+    {
+
+    }
+    #endregion
+
+
     #region Turn_Based_System
     public override void OnTurnStart()
     {
         canMove = true;
+        playerStatsModel.PlayerState = PlayerStates.Moving;
         playerStatsModel.RemainSteps = playerStatsModel.MaxSteps;
         EventSystem.Instance.SendEvent<PlayerTurnStartEvent>(typeof(PlayerTurnStartEvent), new PlayerTurnStartEvent());
     }
@@ -110,6 +193,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     public override void OnTurnEnd()
     {
         canMove = false;
+        playerStatsModel.PlayerState = PlayerStates.Idle;
         playerStatsModel.RemainSteps = 0;
         EventSystem.Instance.SendEvent<PlayerTurnEndEvent>(typeof(PlayerTurnEndEvent), new PlayerTurnEndEvent());
     }
@@ -164,7 +248,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
 
 
 
-        if(CheckGridAvailable(newMousePoint))
+        if(CheckGridAvailable(newMousePoint)&& !playerStatsModel.IsMoving)
         {
             curMousePoint = newMousePoint;
         }
@@ -187,6 +271,14 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
                 ));
         }
     }
+
+    private void ClearMouseHoverRoute()
+    {
+        MouseHoverRouteRenderer.positionCount = 0;
+    }
+
+
+
     #endregion
 
 

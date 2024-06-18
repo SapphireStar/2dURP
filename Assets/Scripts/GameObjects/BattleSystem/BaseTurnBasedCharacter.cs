@@ -10,6 +10,13 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
 
     protected Point m_curPoint;
     protected Vector3 m_curPos;
+
+    protected AttackComponent m_attackComponent;
+
+    public Point CurPoint
+    {
+        get => m_curPoint;
+    }
     #endregion
 
     #region Model
@@ -65,6 +72,22 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
         TurnManager.Instance.EndTurn();
     }
     #endregion
+
+    #region Attack_System
+    /// <summary>
+    /// Called by AttackComponent of other objects, for applying skill effects
+    /// </summary>
+    public void ApplySkillEffect(SkillModel model)
+    {
+        ApplyPhysicalDamage(model.PhysicalDamage);
+        ApplyMagicalDamage(model.MagicalDamage);
+    }
+    public abstract void SetSkillData(SkillData skillData);
+
+    protected abstract void ApplyPhysicalDamage(float damage);
+    protected abstract void ApplyMagicalDamage(float damage);
+    #endregion
+
     #region Path_Finding
     public void SetGridMap(GridMap map)
     {
