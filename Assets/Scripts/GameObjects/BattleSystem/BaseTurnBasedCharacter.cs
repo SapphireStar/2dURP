@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,7 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
     protected Vector3 m_curPos;
 
     protected AttackComponent m_attackComponent;
+    public Action OnSkillCompleteEvent;
 
     public Point CurPoint
     {
@@ -113,8 +115,24 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
         }
 
     }
+    protected virtual bool CheckGridUseSkillAvailable(Point target)
+    {
 
-    protected virtual bool CheckGridAvailable(Point target)
+        bool res = true;
+        if (target.X < 0 || target.Y < 0 || target.X > m_gridMap.StepWidth - 1 || target.Y > m_gridMap.StepHeight - 1)
+        {
+            res &= false;
+        }
+
+        if (m_gridMap.IsObstacle(m_gridMap.GetPointState(target)))
+        {
+            res &= false;
+        }
+
+        return res;
+
+    }
+    protected virtual bool CheckGridWalkAvailable(Point target)
     {
         bool res = true; 
         if(target.X<0||target.Y<0||target.X>m_gridMap.StepWidth-1||target.Y>m_gridMap.StepHeight-1)
@@ -152,7 +170,7 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
             BFSTree cur = queue.Dequeue();
             Point curPoint = cur.Value;
 
-            if (!CheckGridAvailable(cur.Value))
+            if (!CheckGridWalkAvailable(cur.Value))
             {
                 continue;
             }

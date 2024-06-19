@@ -9,5 +9,7 @@ public class SkillData : ScriptableObject
     public float MagicalDamage;
 
     public int RangeRadius;
+    public bool MainAction;
+    public bool BonusAction;
 }
 

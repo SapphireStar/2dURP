@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using MyPackage;
@@ -11,21 +12,25 @@ public enum PlayerStates
 }
 public class PlayerTurnBasedController : BaseTurnBasedCharacter
 {
-    public LineRenderer MouseHoverRouteRenderer;
+    public GameObject MouseHoverRouteGreen;
+    public GameObject MouseHoverRouteRed;
     private List<GameObject> mouseHoverRouteList;
     private Point curMousePoint;
 
     private PlayerStatsModel playerStatsModel;
 
     private bool canMove;
+    private Animator anim;
+    private bool isEndTurnClicked;
     
     // Start is called before the first frame update
     public void Awake()
     {
-        Initialize();
+        
     }
     void Start()
     {
+        Initialize();
         m_curPos = transform.position;
         m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
     }
@@ -36,6 +41,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     {
         Movement();
         ClickUseSkill();
+        ClickCancelSkill();
     }
     public override void Initialize()
     {
@@ -44,8 +50,16 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         m_curPos = m_gridMap.GetPositionViaPoint(m_curPoint);
 
         m_attackComponent = GetComponent<AttackComponent>();
+        OnSkillCompleteEvent += OnSkillCompleteHandler;
+
+        anim = GetComponent<Animator>();
 
         InitializeModels();
+    }
+    void OnDestroy()
+    {
+        OnSkillCompleteEvent -= OnSkillCompleteHandler;
+        playerStatsModel.PropertyValueChanged -= OnPlayerStatsHandler;
     }
 
     #region Player_Behavior
@@ -53,9 +67,10 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     [SerializeField]
     float BFSInterval = 0.05f;
     float timer = 0;
+
     private void Movement()
     {
-        if(playerStatsModel.PlayerState != PlayerStates.Moving)
+        if (playerStatsModel.PlayerState != PlayerStates.Moving)
         {
             ClearMouseHoverRoute();
             return;
@@ -63,6 +78,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         timer -= Time.deltaTime;
         if (timer <= 0)
         {
+            
             timer = BFSInterval;
             MouseHoverRoute();
         }
@@ -83,7 +99,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
             {
                 return;
             }
-            if (!CheckGridAvailable(m_gridMap.GetPointViaPosition(mousePos)))
+            if (!CheckGridWalkAvailable(m_gridMap.GetPointViaPosition(mousePos)))
             {
                 return;
             }
@@ -107,7 +123,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
             }
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Point skillTarget = m_gridMap.GetPointViaPosition(mousePos);
-            if (!CheckGridAvailable(m_gridMap.GetPointViaPosition(mousePos)))
+            if (!CheckGridUseSkillAvailable(m_gridMap.GetPointViaPosition(mousePos)))
             {
                 Debug.Log("Skill Target is Not available");
                 return;
@@ -116,12 +132,23 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
             m_attackComponent.SetTarget(skillTarget);
         }
     }
-
+    private void ClickCancelSkill()
+    {
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            if(playerStatsModel.PlayerState != PlayerStates.Idle)
+            {
+                playerStatsModel.PlayerState = PlayerStates.Idle;
+            }
+        }
+    }
     public void OnClickMoveButton()
     {
         playerStatsModel.PlayerState = PlayerStates.Moving;
         m_attackComponent.ResetSkill();
     }
+
+    
     public void OnClickSkillButton(SkillData skillData)
     {
         //can't attack during moving
@@ -131,12 +158,23 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         }
         playerStatsModel.PlayerState = PlayerStates.Attacking;
         SetSkillData(skillData);
+        if (skillData.MainAction)
+        {
+            playerStatsModel.RemainMainAction--;
+        }
+        if (skillData.BonusAction)
+        {
+            playerStatsModel.RemainBonusAction--;
+        }
     }
+
+
+
 
     #endregion
 
 
-    #region Models
+    #region Models_Events
     private void InitializeModels()
     {
         playerStatsModel = ModelManager.Instance.GetModel<PlayerStatsModel>(typeof(PlayerStatsModel));
@@ -147,27 +185,47 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     {
         switch (e.PropertyName)
         {
-            case  "RemainSteps":
-                
+            case "PlayerState":
+                if((PlayerStates)e.Value == PlayerStates.Idle)
+                {
+                    m_attackComponent.ResetSkill();
+                }
+                break;
+            case "IsMoving":
+                if ((bool)e.Value)
+                {
+                    anim.SetBool("isRun", true);
+                }
+                else
+                {
+                    anim.SetBool("isRun", false);
+                }
                 break;
             default:
                 break;
         }
     }
+
+
     #endregion
 
     #region Attack_System
     public override void SetSkillData(SkillData skillData)
     {
         //Click skill button means player want to attack
-        playerStatsModel.PlayerState = PlayerStates.Attacking;
-
         if (m_attackComponent == null)
         {
             Debug.Log("Current Character has no AttackComponent, Set Skill Failed");
             return;
         }
         m_attackComponent.SetSkill(skillData);
+    }
+    protected override bool CheckGridUseSkillAvailable(Point target)
+    {
+        bool res = base.CheckGridUseSkillAvailable(target);
+
+        return res;
+
     }
     protected override void ApplyPhysicalDamage(float damage)
     {
@@ -178,6 +236,11 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     {
 
     }
+
+    private void OnSkillCompleteHandler()
+    {
+        playerStatsModel.PlayerState = PlayerStates.Idle;
+    }
     #endregion
 
 
@@ -185,8 +248,10 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     public override void OnTurnStart()
     {
         canMove = true;
-        playerStatsModel.PlayerState = PlayerStates.Moving;
         playerStatsModel.RemainSteps = playerStatsModel.MaxSteps;
+        playerStatsModel.RemainMainAction = playerStatsModel.MaxMainAction;
+        playerStatsModel.RemainBonusAction = playerStatsModel.MaxBonusAction;
+
         EventSystem.Instance.SendEvent<PlayerTurnStartEvent>(typeof(PlayerTurnStartEvent), new PlayerTurnStartEvent());
     }
 
@@ -195,6 +260,10 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         canMove = false;
         playerStatsModel.PlayerState = PlayerStates.Idle;
         playerStatsModel.RemainSteps = 0;
+        playerStatsModel.RemainMainAction = 0;
+        playerStatsModel.RemainBonusAction = 0;
+        m_attackComponent.ResetSkill();
+
         EventSystem.Instance.SendEvent<PlayerTurnEndEvent>(typeof(PlayerTurnEndEvent), new PlayerTurnEndEvent());
     }
 
@@ -202,9 +271,16 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     #endregion
 
     #region Path_Finding
-    protected override bool CheckGridAvailable(Point target)
+    protected override bool CheckGridWalkAvailable(Point target)
     {
-        bool res = base.CheckGridAvailable(target);
+        bool res = base.CheckGridWalkAvailable(target);
+
+        //player can't walk on another character
+        TurnManager.Instance.TryGetTurnObject(target, out BaseTurnBasedCharacter character);
+        if (character != null && character!=this)
+        {
+            res &= false;
+        }
 
         return res;
 
@@ -219,14 +295,28 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         yield return StartCoroutine(RapidMove(stack));
 
         playerStatsModel.IsMoving = false;
+
+        //If player has no RemainSteps, auto go to Idle state
+        if (playerStatsModel.RemainSteps <= 0)
+        {
+            playerStatsModel.PlayerState = PlayerStates.Idle;
+        }
+        
     }
     protected override IEnumerator RapidMove(Stack<Point> pathStack)
     {
         while (pathStack.Count > 0)
         {
-            yield return new WaitForSeconds(0.1f);
             Point nextTarget = pathStack.Pop();
-            transform.position = m_gridMap.GetPositionViaPoint(nextTarget);
+            Vector3 targetPos = m_gridMap.GetPositionViaPoint(nextTarget);
+            
+            while (Vector3.Distance(targetPos, transform.position) > 0.01f)
+            {
+                Vector3 moveDir = Vector3.Normalize(targetPos - transform.position);
+                transform.Translate(moveDir * Time.deltaTime);
+                yield return new WaitForEndOfFrame();
+            }
+
             m_curPoint = m_gridMap.GetPointViaPosition(transform.position);
             m_curPos = transform.position;
         }
@@ -248,33 +338,43 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
 
 
 
-        if(CheckGridAvailable(newMousePoint)&& !playerStatsModel.IsMoving)
+        if(CheckGridWalkAvailable(newMousePoint)&& !playerStatsModel.IsMoving)
         {
             curMousePoint = newMousePoint;
         }
-/*        if (newMousePoint.Equals(curMousePoint))
-        {
-            return;
-        }*/
-        
+        /*        if (newMousePoint.Equals(curMousePoint))
+                {
+                    return;
+                }*/
+
+
+        ClearMouseHoverRoute();
         Stack<Point> stack = StartPathFinding(m_curPoint, curMousePoint);
         int routeLength = stack.Count;
-        MouseHoverRouteRenderer.positionCount = routeLength;
         for (int i = 0; i < routeLength; i++)
         {
             Point point = stack.Pop();
             Vector3 pos = m_gridMap.GetPositionViaPoint(point);
-            MouseHoverRouteRenderer.SetPosition(i, new Vector3(
-                pos.x,
-                pos.y,
-                -5
-                ));
+            if (i <= playerStatsModel.RemainSteps|| playerStatsModel.IsMoving)//The route should be green during moving
+            {
+                mouseHoverRouteList.Add(Instantiate(MouseHoverRouteGreen, pos, Quaternion.identity));
+            }
+            else
+            {
+                mouseHoverRouteList.Add(Instantiate(MouseHoverRouteRed, pos, Quaternion.identity));
+            }
+            
         }
     }
 
     private void ClearMouseHoverRoute()
     {
-        MouseHoverRouteRenderer.positionCount = 0;
+        int length = mouseHoverRouteList.Count;
+        for (int i = 0; i < length; i++)
+        {
+            DestroyImmediate(mouseHoverRouteList[i]);
+        }
+        mouseHoverRouteList.Clear();
     }
 
 

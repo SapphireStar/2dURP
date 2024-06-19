@@ -22,6 +22,9 @@ public class PlayerStatsModel : Model
     public PlayerStatsModel()
     {
         m_maxSteps = 10;
+        MaxMainAction = 1;
+        MaxBonusAction = 1;
+
     }
 
     public PlayerStates PlayerState

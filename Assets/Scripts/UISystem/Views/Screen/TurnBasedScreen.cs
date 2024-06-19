@@ -67,14 +67,25 @@ public class TurnBasedScreen : MonoBehaviour
             case "RemainSteps":
                 TextRemainSteps.text = $"Remain Steps: {e.Value}";
                 break;
-            case "IsMoving":
-                if ((bool)e.Value)
+            /*            case "IsMoving":
+                            if ((bool)e.Value)
+                            {
+                                DisableInteractiveUI();
+                            }
+                            else
+                            {
+                                EnableInteractiveUI();
+                            }
+                            break;*/
+            case "PlayerState":
+                if ((PlayerStates)e.Value == PlayerStates.Idle)
                 {
-                    DisableInteractiveUI();
+                    EnableInteractiveUI();
+
                 }
                 else
                 {
-                    EnableInteractiveUI();
+                    DisableInteractiveUI();
                 }
                 break;
         }

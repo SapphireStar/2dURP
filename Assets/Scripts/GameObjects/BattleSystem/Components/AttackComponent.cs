@@ -109,6 +109,7 @@ public class AttackComponent : MonoBehaviour
         }
 
         Debug.Log($"Apply Skill at Point: {point}");
+        character.OnSkillCompleteEvent?.Invoke();//Pass skill complete event
 
         ResetSkill();
     }
