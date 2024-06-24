@@ -6,17 +6,37 @@ using UnityEngine;
 public class AttackComponent : MonoBehaviour
 {
     public GridMap gridMap;
+
     public GameObject RangeDisplayPrefab;
     private List<GameObject> rangeDisplayPrefabs;
+    public GameObject AttackPosPrefab;
+    private List<GameObject> attackPosPrefabs;
+
     private BaseTurnBasedCharacter character;
     private SkillData curSkillData;
     private SkillModel curSkillModel;
+
+    private Animator anim;
+    private Point curTarget;
+
+    private bool isAttacking;
+    private float attackPosTimer;
+    [SerializeField]
+    private float attackPosInterval = 0.01f;
+    public Color colorAttackPosAvailable;
+    public Color colorAttackPosUnavailable;
     public void Start()
     {
         character = GetComponent<BaseTurnBasedCharacter>();
+        anim = GetComponent<Animator>();
         rangeDisplayPrefabs = new List<GameObject>();
+        attackPosPrefabs = new List<GameObject>();
+        
     }
-
+    public void Update()
+    {
+        DisplayAttackPos();
+    }
     public void SetSkill(SkillData data)
     {
         ResetSkill();
@@ -26,6 +46,8 @@ public class AttackComponent : MonoBehaviour
 
         CalculateValue();
         DisplayRange();
+
+        isAttacking = true;
     }
     /// <summary>
     /// Calculate the final value of the skill according to character status
@@ -62,6 +84,41 @@ public class AttackComponent : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Display the grids that can be effect by skill according to mouse position
+    /// </summary>
+    public void DisplayAttackPos()
+    {
+        if (!isAttacking)
+        {
+            return;
+        }
+        if (attackPosTimer <= 0)
+        {
+            attackPosTimer = attackPosInterval;
+            ClearAttackPosPrefabs();
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Point mousePoint = gridMap.GetPointViaPosition(mousePos);
+            Vector3 exactPos = gridMap.GetPositionViaPoint(mousePoint);
+
+            GameObject attackPos = Instantiate(AttackPosPrefab, exactPos, Quaternion.identity);
+            if (!CheckTargetInRange(mousePoint))
+            {
+                attackPos.GetComponent<SpriteRenderer>().color = colorAttackPosUnavailable;
+            }
+            else
+            {
+                attackPos.GetComponent<SpriteRenderer>().color = colorAttackPosAvailable;
+            }
+            attackPosPrefabs.Add(attackPos);
+        }
+        else
+        {
+            attackPosTimer -= Time.deltaTime;
+        }
+    }
+
     private bool CheckTargetInRange(Point target)
     {
         int distance = Mathf.Abs(target.X - character.CurPoint.X) + Mathf.Abs(target.Y - character.CurPoint.Y);
@@ -80,15 +137,38 @@ public class AttackComponent : MonoBehaviour
         }
         curSkillModel.Targets.Add(target);
 
+
+        ChangeDirWhenAttack(target);
+        ClearRangeDisplayPrefabs();
+        ClearAttackPosPrefabs();
         PlaySkillAnim(target);
     }
+    /// <summary>
+    /// Change character direction according to attack point
+    /// </summary>
+    /// <param name="target"></param>
+    protected void ChangeDirWhenAttack(Point target)
+    {
+        if (target.X - character.CurPoint.X > 0 && transform.localScale.x < 0)
+        {
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        }
+        else if (target.X - character.CurPoint.X < 0 && transform.localScale.x > 0)
+        {
+            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
 
+        }
+    }
     public void PlaySkillAnim(Point target)
     {
         Debug.Log($"Play the attack animation at {target}");
-        ApplySkillEffect(target);
+        anim.SetTrigger(curSkillData.AnimTrigger);
+        curTarget = target;
     }
-
+    public void OnAttackAnimationComplete()
+    {
+        ApplySkillEffect(curTarget);
+    }
     public void ApplySkillEffect(Point point)
     {
         if (curSkillModel == null)
@@ -109,20 +189,35 @@ public class AttackComponent : MonoBehaviour
         }
 
         Debug.Log($"Apply Skill at Point: {point}");
-        character.OnSkillCompleteEvent?.Invoke();//Pass skill complete event
+        character.OnSkillCompleteEvent?.Invoke(curSkillData);//Pass skill complete event
 
         ResetSkill();
     }
 
+    public void ClearRangeDisplayPrefabs()
+    {
+        for (int i = 0; i < rangeDisplayPrefabs.Count; i++)
+        {
+            Destroy(rangeDisplayPrefabs[i]);
+        }
+        rangeDisplayPrefabs.Clear();
+    }
+    public void ClearAttackPosPrefabs()
+    {
+        for (int i = 0; i < attackPosPrefabs.Count; i++)
+        {
+            Destroy(attackPosPrefabs[i]);
+        }
+        attackPosPrefabs.Clear();
+    }
     public void ResetSkill()
     {
         curSkillData = null;
         curSkillModel = null;
 
-        for (int i = 0; i < rangeDisplayPrefabs.Count; i++)
-        {
-            DestroyImmediate(rangeDisplayPrefabs[i]);
-        }
-        rangeDisplayPrefabs.Clear();
+        ClearRangeDisplayPrefabs();
+        ClearAttackPosPrefabs();
+
+        isAttacking = false;
     }
 }

@@ -15,3 +15,6 @@ MonoBehaviour:
   PhysicalDamage: 10
   MagicalDamage: 0
   RangeRadius: 2
+  MainAction: 1
+  BonusAction: 0
+  AnimTrigger: attack

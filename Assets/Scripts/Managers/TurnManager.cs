@@ -23,6 +23,13 @@ public class TurnManager : MonoSingleton<TurnManager>
     {
         turnObjectsPointsDictionary = new Dictionary<Point, BaseTurnBasedCharacter>();
         turnModel = ModelManager.Instance.GetModel<TurnModel>(typeof(TurnModel));
+        //TODO:Initialize Turn Objects at here
+        foreach (var item in turnObjects)
+        {
+            item.Initialize();
+        }
+
+        UpdateTurnObjectsPos();//Update positions of all objects
         TurnStart();
     }
 

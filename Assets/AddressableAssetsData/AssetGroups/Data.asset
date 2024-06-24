@@ -15,8 +15,20 @@ MonoBehaviour:
   m_GroupName: Data
   m_Data:
     m_SerializedData: []
-  m_GUID: 55560f06d5127964ebeccd45c51f777b
+  m_GUID: 73d03bcc0c3229747b9e228f30e75232
   m_SerializeEntries:
+  - m_GUID: 3a66947e4bbe12b419df4b1927ce096b
+    m_Address: BlockSpriteData
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: a3aec08133aa57946b7366852b758ee5
+    m_Address: MapData
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 02ba0c29e446d0d4a9f903b339247161
+    m_Address: MeleeAttack
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   - m_GUID: e5a61a7fc978d264284028233c857434
     m_Address: PlayerInput
     m_ReadOnly: 0

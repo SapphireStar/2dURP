@@ -8,7 +8,10 @@ public enum PlayerStates
 {
     Idle,
     Moving,
+    Moved,
     Attacking,
+    Attacked,
+    Died,
 }
 public class PlayerTurnBasedController : BaseTurnBasedCharacter
 {
@@ -21,8 +24,11 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
 
     private bool canMove;
     private Animator anim;
-    private bool isEndTurnClicked;
-    
+    private bool isInitialized;
+
+    #region StateMachine
+    public PlayerStateMachine playerStateMachine;
+    #endregion
     // Start is called before the first frame update
     public void Awake()
     {
@@ -30,9 +36,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     }
     void Start()
     {
-        Initialize();
-        m_curPos = transform.position;
-        m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
+
     }
 
     
@@ -42,12 +46,19 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         Movement();
         ClickUseSkill();
         ClickCancelSkill();
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            ApplyPhysicalDamage(10);
+        }
     }
     public override void Initialize()
     {
+        playerStateMachine = new PlayerStateMachine(this);
+
+        m_curPos = transform.position;
+        m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
+
         mouseHoverRouteList = new List<GameObject>();
-        m_curPoint = new Point(1, 1);
-        m_curPos = m_gridMap.GetPositionViaPoint(m_curPoint);
 
         m_attackComponent = GetComponent<AttackComponent>();
         OnSkillCompleteEvent += OnSkillCompleteHandler;
@@ -55,6 +66,14 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         anim = GetComponent<Animator>();
 
         InitializeModels();
+
+        #region Temp_Player_Stats_Initialization
+        playerStatsModel.Health = 100;
+        playerStatsModel.PlayerState = PlayerStates.Idle;
+        playerStatsModel.MaxMainAction = 1;
+        playerStatsModel.MaxBonusAction = 1;
+        playerStatsModel.MaxSteps = 5;
+        #endregion
     }
     void OnDestroy()
     {
@@ -65,7 +84,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     #region Player_Behavior
 
     [SerializeField]
-    float BFSInterval = 0.05f;
+    float BFSInterval = 0.01f;
     float timer = 0;
 
     private void Movement()
@@ -84,7 +103,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         }
         ClickMove();
     }
-    private void ClickMove()
+    public void ClickMove()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
@@ -117,10 +136,11 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            if (playerStatsModel.PlayerState != PlayerStates.Attacking)
+            if (playerStatsModel.PlayerState != PlayerStates.Attacking || playerStatsModel.PlayerState == PlayerStates.Attacked)
             {
                 return;
             }
+            playerStatsModel.PlayerState = PlayerStates.Attacked;
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Point skillTarget = m_gridMap.GetPointViaPosition(mousePos);
             if (!CheckGridUseSkillAvailable(m_gridMap.GetPointViaPosition(mousePos)))
@@ -134,7 +154,11 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     }
     private void ClickCancelSkill()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if(playerStatsModel.PlayerState == PlayerStates.Died)
+        {
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.Mouse1) && !playerStatsModel.IsMoving)
         {
             if(playerStatsModel.PlayerState != PlayerStates.Idle)
             {
@@ -144,6 +168,10 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     }
     public void OnClickMoveButton()
     {
+        if (playerStatsModel.PlayerState != PlayerStates.Idle)
+        {
+            return;
+        }
         playerStatsModel.PlayerState = PlayerStates.Moving;
         m_attackComponent.ResetSkill();
     }
@@ -151,21 +179,28 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     
     public void OnClickSkillButton(SkillData skillData)
     {
-        //can't attack during moving
-        if (playerStatsModel.IsMoving)
+        if (playerStatsModel.PlayerState != PlayerStates.Idle)
         {
             return;
         }
+        //can't attack during moving
+        if (playerStatsModel.IsMoving )
+        {
+            return;
+        }
+        //Check remain actions
+        if (skillData.MainAction && playerStatsModel.RemainMainAction <= 0)
+        {
+            return;
+        }
+        if(skillData.BonusAction && playerStatsModel.RemainBonusAction <= 0)
+        {
+            return;
+        }
+
         playerStatsModel.PlayerState = PlayerStates.Attacking;
         SetSkillData(skillData);
-        if (skillData.MainAction)
-        {
-            playerStatsModel.RemainMainAction--;
-        }
-        if (skillData.BonusAction)
-        {
-            playerStatsModel.RemainBonusAction--;
-        }
+
     }
 
 
@@ -229,6 +264,17 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     }
     protected override void ApplyPhysicalDamage(float damage)
     {
+        if(playerStatsModel.PlayerState != PlayerStates.Idle)
+        {
+            return;
+        }
+        playerStatsModel.Health -= damage;
+        anim.SetTrigger("hurt");
+        if (playerStatsModel.Health <= 0)
+        {
+            playerStatsModel.PlayerState = PlayerStates.Died;
+            anim.SetTrigger("die");
+        }
 
     }
 
@@ -237,9 +283,17 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
 
     }
 
-    private void OnSkillCompleteHandler()
+    private void OnSkillCompleteHandler(SkillData skillData)
     {
         playerStatsModel.PlayerState = PlayerStates.Idle;
+        if (skillData.MainAction)
+        {
+            playerStatsModel.RemainMainAction--;
+        }
+        if (skillData.BonusAction)
+        {
+            playerStatsModel.RemainBonusAction--;
+        }
     }
     #endregion
 
@@ -314,6 +368,14 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
             {
                 Vector3 moveDir = Vector3.Normalize(targetPos - transform.position);
                 transform.Translate(moveDir * Time.deltaTime);
+                if (moveDir.x > 0 && transform.localScale.x<0)
+                {
+                    transform.localScale = new Vector3(transform.localScale.x*-1,transform.localScale.y,transform.localScale.z);
+                }
+                else if (moveDir.x < 0 && transform.localScale.x > 0)
+                {
+                    transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+                }
                 yield return new WaitForEndOfFrame();
             }
 
@@ -331,7 +393,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         int routeLength = stack.Count-1;//subtract the Start Point
         return routeLength;
     }
-    private void MouseHoverRoute()
+    public void MouseHoverRoute()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Point newMousePoint = m_gridMap.GetPointViaPosition(mousePos);
@@ -367,7 +429,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         }
     }
 
-    private void ClearMouseHoverRoute()
+    public void ClearMouseHoverRoute()
     {
         int length = mouseHoverRouteList.Count;
         for (int i = 0; i < length; i++)

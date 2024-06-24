@@ -41,12 +41,14 @@ public class TurnBasedScreen : MonoBehaviour
         ButtonEndTurn.gameObject.SetActive(false);
         GroupCanvas.interactable = false;
         GroupCanvas.alpha = 0.5f;
+        GroupCanvas.blocksRaycasts = false;
     }
     private void EnableInteractiveUI()
     {
         ButtonEndTurn.gameObject.SetActive(true);
         GroupCanvas.interactable = true;
         GroupCanvas.alpha = 1;
+        GroupCanvas.blocksRaycasts = true;
     }
 
     private void OnTurnModelChangedHandler(object sender, PropertyValueChangedEventArgs e)

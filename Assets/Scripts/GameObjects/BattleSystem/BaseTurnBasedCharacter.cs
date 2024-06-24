@@ -13,7 +13,7 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
     protected Vector3 m_curPos;
 
     protected AttackComponent m_attackComponent;
-    public Action OnSkillCompleteEvent;
+    public Action<SkillData> OnSkillCompleteEvent;
 
     public Point CurPoint
     {
@@ -58,10 +58,7 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
             }
         }
     }
-    public virtual void Initialize()
-    {
-
-    }
+    public abstract void Initialize();
 
 
     #region Turn_Based_System
@@ -88,6 +85,8 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
 
     protected abstract void ApplyPhysicalDamage(float damage);
     protected abstract void ApplyMagicalDamage(float damage);
+
+
     #endregion
 
     #region Path_Finding

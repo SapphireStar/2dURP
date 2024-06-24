@@ -11,5 +11,7 @@ public class SkillData : ScriptableObject
     public int RangeRadius;
     public bool MainAction;
     public bool BonusAction;
+
+    public string AnimTrigger;
 }
 

@@ -15,7 +15,7 @@ namespace Isekai.Managers
             MainMenuViewModel viewmodel = new MainMenuViewModel();
             await ScreenManager.Instance.TransitionToInstant(UI.EScreenType.MainMenuScreen, ELayerType.DefaultLayer, viewmodel);
 
-            SoundManager.Instance.PlayMusic(SoundDefine.Music_CottonPuzzle);
+            SoundManager.Instance.PlayMusic(SoundDefine.Music_MainMenu);
         }
 
         public async UniTask InitializeManagers()

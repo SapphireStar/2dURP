@@ -14,11 +14,15 @@ public class PlayerStatsModel : Model
     private bool m_isMoving;
     #endregion
 
+    #region Battle
     private int m_maxMainAction;
     private int m_maxBonusAction;
     private int m_remainMainAction;
     private int m_remainBonusAction;
 
+    private float m_health;
+
+    #endregion
     public PlayerStatsModel()
     {
         m_maxSteps = 10;
@@ -37,7 +41,7 @@ public class PlayerStatsModel : Model
     }
 
 
-    #region Attack
+    #region Battle
     public int MaxMainAction
     {
         get => m_maxMainAction;
@@ -70,6 +74,15 @@ public class PlayerStatsModel : Model
         set
         {
             ChangePropertyAndNotify<int>(ref m_remainBonusAction, value);
+        }
+    }
+
+    public float Health
+    {
+        get => m_health;
+        set
+        {
+            ChangePropertyAndNotify<float>(ref m_health, value);
         }
     }
     #endregion

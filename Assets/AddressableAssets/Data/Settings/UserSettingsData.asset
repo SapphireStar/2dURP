@@ -20,12 +20,28 @@ MonoBehaviour:
     MaxValue: 0
     IncrementSize: 0
     CustomSettingItemPrefab: {fileID: 0}
-    SubSettings: []
+    SubSettings:
+    - Title: MusicVolume
+      SettingName: MusicVolume
+      Type: 1
+      MinValue: 0
+      MaxValue: 20
+      IncrementSize: 1
+      CustomSettingItemPrefab: {fileID: 0}
+      SubSettings: []
   - Title: SoundOn
     SettingName: SoundOn
     Type: 0
     MinValue: 0
     MaxValue: 0
     IncrementSize: 0
+    CustomSettingItemPrefab: {fileID: 0}
+    SubSettings: []
+  - Title: SoundVolume
+    SettingName: SoundVolume
+    Type: 1
+    MinValue: 0
+    MaxValue: 20
+    IncrementSize: 1
     CustomSettingItemPrefab: {fileID: 0}
     SubSettings: []

@@ -13,7 +13,11 @@ public class DummyTurnBasedController : BaseTurnBasedCharacter
             m_health = value;
         }
     }
-
+    public override void Initialize()
+    {
+        m_curPos = transform.position;
+        m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
+    }
     public override void OnTurnEnd()
     {
         Debug.Log("Dummy Turn Ended");
@@ -67,4 +71,6 @@ public class DummyTurnBasedController : BaseTurnBasedCharacter
     {
         Debug.Log("Dummy Set SkillData");
     }
+
+
 }
