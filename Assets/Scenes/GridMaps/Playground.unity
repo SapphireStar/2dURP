@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 078715c33fe6ede4e8b72c4fce43d224, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  global: 1
+  global: 0
   turnObjects:
   - {fileID: 915947723}
   - {fileID: 100226350}
@@ -266,6 +266,9 @@ GameObject:
   - component: {fileID: 100226351}
   - component: {fileID: 100226350}
   - component: {fileID: 100226352}
+  - component: {fileID: 100226353}
+  - component: {fileID: 100226354}
+  - component: {fileID: 100226355}
   m_Layer: 0
   m_Name: Dummy
   m_TagString: Untagged
@@ -353,6 +356,79 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &100226353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100226349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d7b55c7ecdb49a4a89fa5e6f9022861, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startWhenEnabled: 1
+  asynchronousLoad: 0
+  pauseWhenDisabled: 0
+  restartWhenComplete: 0
+  logTaskChanges: 0
+  group: 0
+  resetValuesOnRestart: 0
+  externalBehavior: {fileID: 0}
+  mBehaviorSource:
+    behaviorName: DummyBehavior
+    behaviorDescription: 
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(684.545532,-49.54545)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Repeater","NodeData":{"Offset":"(-2.67476654,163.328064)"},"ID":1,"Name":"Repeater","Instant":true,"SharedIntcount":{"Type":"BehaviorDesigner.Runtime.SharedInt","Name":null,"Int32mValue":0},"SharedBoolrepeatForever":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":true},"SharedBoolendOnFailure":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":true},"Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(0,136.170166)"},"ID":2,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"ConditionIsInTurn","NodeData":{"Offset":"(-220,152.5)"},"ID":3,"Name":"Condition
+        Is In Turn","Instant":true,"SharedBoolIsInTurn":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":"IsInTurn","IsShared":true,"BooleanmValue":false}},{"Type":"TaskDummyMove","NodeData":{"Offset":"(-62.6595764,150)"},"ID":4,"Name":"Task
+        Dummy Move","Instant":true},{"Type":"BehaviorDesigner.Runtime.Tasks.Wait","NodeData":{"Offset":"(77.34037,150)"},"ID":5,"Name":"Wait","Instant":true,"SharedFloatwaitTime":{"Type":"BehaviorDesigner.Runtime.SharedFloat","Name":null,"SinglemValue":1},"SharedBoolrandomWait":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":null,"BooleanmValue":false},"SharedFloatrandomWaitMin":{"Type":"BehaviorDesigner.Runtime.SharedFloat","Name":null,"SinglemValue":1},"SharedFloatrandomWaitMax":{"Type":"BehaviorDesigner.Runtime.SharedFloat","Name":null,"SinglemValue":1}},{"Type":"TaskDummyEndTurn","NodeData":{"Offset":"(239.340332,150)"},"ID":6,"Name":"Task
+        Dummy End Turn","Instant":true,"SharedBoolIsInTurn":{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":"IsInTurn","IsShared":true,"BooleanmValue":false}}]}]},"Variables":[{"Type":"BehaviorDesigner.Runtime.SharedBool","Name":"IsInTurn","IsShared":true,"BooleanmValue":false}]}'
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects: []
+        byteData: 
+        byteDataArray: 
+      Version: 1.7.9
+  gizmoViewMode: 2
+  showBehaviorDesignerGizmo: 1
+--- !u!114 &100226354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100226349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 989cf87ae8c938745bfbae5506178c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &100226355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100226349}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54a8c704124bd7a44b9debfebdff140e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridMap: {fileID: 306173370}
+  RangeDisplayPrefab: {fileID: 2915549325745464727, guid: 80b9c868b87caf848bbaeea6b687edd3, type: 3}
+  AttackPosPrefab: {fileID: 5337828585905500585, guid: eb7b069c44ac8c742aabd5b5c3aeca25, type: 3}
+  attackPosInterval: 0.01
+  colorAttackPosAvailable: {r: 0.49081108, g: 1, b: 0.4575472, a: 0.39215687}
+  colorAttackPosUnavailable: {r: 1, g: 0.3915094, b: 0.3915094, a: 0.39215687}
 --- !u!1 &268008383
 GameObject:
   m_ObjectHideFlags: 0
@@ -403,10 +479,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -914,52 +990,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 666690310}
   m_CullTransparentMesh: 1
---- !u!1 &735648260
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 735648261}
-  - component: {fileID: 735648262}
-  m_Layer: 0
-  m_Name: TestFSM
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &735648261
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 735648260}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.1873753, y: 1.2738339, z: -0.08607533}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 10
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &735648262
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 735648260}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20cdadfd15dd6eb4aaad14b30555fc2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  StateRefreshInterval: 0.01
-  m_curCondition: 0
 --- !u!1 &739552523
 GameObject:
   m_ObjectHideFlags: 0

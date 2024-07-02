@@ -28,13 +28,8 @@ public class PlayerMoveState : BaseState<PlayerStates>
 
     public override void OnUpdate()
     {
-        timer -= Time.deltaTime;
-        if (timer <= 0)
-        {
-            timer = timerInterval;
-            MouseHoverRoute();
-        }
-        ClickMove();
+
+
     }
 
 

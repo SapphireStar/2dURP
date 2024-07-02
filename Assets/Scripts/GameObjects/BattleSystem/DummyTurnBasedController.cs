@@ -1,10 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using BehaviorDesigner.Runtime;
 using UnityEngine;
 
 public class DummyTurnBasedController : BaseTurnBasedCharacter
 {
+    private ObjectStatsComponent objectStatus;
+    private AttackComponent attackComponent;
+    private BehaviorTree behaviorTree;
+
     private float m_health;
+
     public float Health
     {
         get => m_health;
@@ -17,16 +23,26 @@ public class DummyTurnBasedController : BaseTurnBasedCharacter
     {
         m_curPos = transform.position;
         m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
+
+        objectStatus = GetComponent<ObjectStatsComponent>();
+        attackComponent = GetComponent<AttackComponent>();
+        behaviorTree = GetComponent<BehaviorTree>();
     }
     public override void OnTurnEnd()
     {
         Debug.Log("Dummy Turn Ended");
+
+        objectStatus.IsInTurn = false;
+        behaviorTree.SetVariableValue("IsInTurn", false);
     }
 
     public override void OnTurnStart()
     {
         Debug.Log("Dummy Turn Started");
-        StartCoroutine(TestNextTurn());
+        //StartCoroutine(TestNextTurn());
+
+        objectStatus.IsInTurn = true;
+        behaviorTree.SetVariableValue("IsInTurn", true);
     }
     IEnumerator TestNextTurn()
     {

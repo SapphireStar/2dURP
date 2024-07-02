@@ -268,6 +268,8 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         {
             return;
         }
+        
+
         playerStatsModel.Health -= damage;
         anim.SetTrigger("hurt");
         if (playerStatsModel.Health <= 0)
@@ -339,7 +341,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         return res;
 
     }
-    protected override IEnumerator MoveTo(Vector3 targetPos)
+    public override IEnumerator MoveTo(Vector3 targetPos)
     {
         playerStatsModel.IsMoving = true;
 

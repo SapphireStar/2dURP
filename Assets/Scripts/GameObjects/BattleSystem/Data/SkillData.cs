@@ -13,5 +13,7 @@ public class SkillData : ScriptableObject
     public bool BonusAction;
 
     public string AnimTrigger;
+
+    public bool CanApplySelf;
 }
 

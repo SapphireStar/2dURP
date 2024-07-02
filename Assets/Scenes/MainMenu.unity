@@ -342,6 +342,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4968473052239659926, guid: 5ffe3d47fe66bdd4c91013376f8b932e, type: 3}
+      propertyPath: TransitionScreen
+      value: 
+      objectReference: {fileID: 5544413791138218314, guid: 4419918f5cb69094b8146008d43234d5, type: 3}
     - target: {fileID: 7735410911034407969, guid: 5ffe3d47fe66bdd4c91013376f8b932e, type: 3}
       propertyPath: m_Name
       value: Game

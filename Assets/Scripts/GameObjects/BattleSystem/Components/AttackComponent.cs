@@ -121,6 +121,10 @@ public class AttackComponent : MonoBehaviour
 
     private bool CheckTargetInRange(Point target)
     {
+        if(!curSkillData.CanApplySelf&&target.Equals(character.CurPoint))
+        {
+            return false;
+        }
         int distance = Mathf.Abs(target.X - character.CurPoint.X) + Mathf.Abs(target.Y - character.CurPoint.Y);
         if(distance > curSkillData.RangeRadius)
         {

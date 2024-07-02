@@ -94,7 +94,14 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
     {
         m_gridMap = map;
     }
-    protected virtual IEnumerator MoveTo(Vector3 targetPos)
+    public virtual IEnumerator MoveTo(Point targetPoint)
+    {
+        m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
+
+        var stack = StartPathFinding(m_curPoint, targetPoint);
+        yield return StartCoroutine(RapidMove(stack));
+    }
+    public virtual IEnumerator MoveTo(Vector3 targetPos)
     {
         m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
         //transform.position = m_gridMap.GetPositionViaPoint(m_curPoint);

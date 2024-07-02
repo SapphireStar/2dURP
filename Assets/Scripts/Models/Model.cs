@@ -11,7 +11,6 @@ namespace Isekai.UI.Models
         {
 
         }
-
         public event PropertyValueChangedEventHandler PropertyValueChanged;
         protected bool ChangePropertyAndNotify<T>(ref T currentValue, T newValue, [CallerMemberName] string propertyName = null)
         {

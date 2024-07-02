@@ -44,4 +44,8 @@ public struct Point:IEquatable<Point>
     {
         return $"({m_x}, {m_y})";
     }
+    public static float Distance(Point a, Point b)
+    {
+        return MathF.Sqrt(MathF.Pow(a.X - b.X, 2) + MathF.Pow(a.Y - b.Y, 2));
+    }
 }

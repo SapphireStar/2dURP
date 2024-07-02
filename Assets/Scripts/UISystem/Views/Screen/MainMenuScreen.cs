@@ -9,6 +9,7 @@ namespace Isekai.UI.Views.Screens
 {
     public class MainMenuScreen : Screen<MainMenuViewModel>
     {
+        public string NewGameSceneName;
         public override void OnEnterScreen()
         {
             
@@ -20,7 +21,7 @@ namespace Isekai.UI.Views.Screens
         }
         public void OnNewGameClicked()
         {
-            LevelManager.Instance.TransitionToScene("TestBattleScene").Forget();
+            LevelManager.Instance.TransitionToScene(NewGameSceneName).Forget();
         }
         public void OnSettingsClicked()
         {

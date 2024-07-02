@@ -18,6 +18,7 @@ public class TurnManager : MonoSingleton<TurnManager>
     }
 
     private TurnModel turnModel;
+
     // Start is called before the first frame update
     void Start()
     {
