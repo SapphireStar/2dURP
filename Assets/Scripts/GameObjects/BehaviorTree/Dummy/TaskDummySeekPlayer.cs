@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using BehaviorDesigner.Runtime.Tasks;
 using UnityEngine;
 
-public class TaskDummyMove : Action
+public class TaskDummySeekPlayer : Action
 {
     private BaseTurnBasedCharacter character;
     private bool isMoveComplete;
