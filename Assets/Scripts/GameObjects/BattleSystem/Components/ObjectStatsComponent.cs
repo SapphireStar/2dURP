@@ -14,7 +14,15 @@ public class ObjectStatsComponent : MonoBehaviour
             ChangePropertyAndNotify<bool>(ref isInTurn, value);
         }
     }
-
+    private int remainSteps;
+    public int RemainSteps
+    {
+        get => remainSteps;
+        set
+        {
+            ChangePropertyAndNotify<int>(ref remainSteps, value);
+        }
+    }
 
     #region Event_Part
     public event PropertyValueChangedEventHandler PropertyValueChanged;

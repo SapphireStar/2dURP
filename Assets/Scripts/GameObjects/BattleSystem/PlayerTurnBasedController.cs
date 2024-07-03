@@ -249,10 +249,22 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     #endregion
 
     #region Attack_System
+
+    private float attackPosTimer;
+    [Tooltip("The refresh interval of the position of AttackPos display prefab")]
+    public float AttackPosInterval;
     private void DisplayAttackPos()
     {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        m_attackComponent.DisplayAttackPos(mousePos);
+        if (attackPosTimer <= 0)
+        {
+            attackPosTimer = AttackPosInterval;
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            m_attackComponent.DisplayAttackPos(mousePos);
+        }
+        else
+        {
+            attackPosTimer -= Time.deltaTime;
+        }
     }
     public override void SetSkillData(SkillData skillData)
     {

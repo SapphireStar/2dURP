@@ -39,7 +39,7 @@ public class TaskDummySeekPlayer : Action
         isMoveComplete = false;
         Debug.Log("Start Move");
         Point target = TurnManager.Instance.Player.CurPoint;
-        yield return StartCoroutine(character.MoveTo(getAvailablePointFromPlayer(target)));
+        yield return StartCoroutine(character.MoveTo(getAvailablePointFromPlayer(target), 5));
         isMoveComplete = true;
     }
 

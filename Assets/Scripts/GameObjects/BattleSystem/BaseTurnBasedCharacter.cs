@@ -19,6 +19,10 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
     {
         get => m_curPoint;
     }
+    public Vector3 CurPos
+    {
+        get => m_curPos;
+    }
     #endregion
 
     #region Model
@@ -109,6 +113,21 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
         yield return StartCoroutine(RapidMove(stack));
 
     }
+    public virtual IEnumerator MoveTo(Point targetPoint, int remainSteps)
+    {
+        m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
+
+        var stack = StartPathFinding(m_curPoint, targetPoint, remainSteps);
+        yield return StartCoroutine(RapidMove(stack));
+    }
+    public virtual IEnumerator MoveTo(Vector3 targetPos, int remainSteps)
+    {
+        m_curPoint = m_gridMap.GetPointViaPosition(m_curPos);
+        //transform.position = m_gridMap.GetPositionViaPoint(m_curPoint);
+        var stack = StartPathFinding(m_curPoint, m_gridMap.GetPointViaPosition(targetPos), remainSteps);
+        yield return StartCoroutine(RapidMove(stack));
+
+    }
     protected virtual IEnumerator RapidMove(Stack<Point> pathStack)
     {
         while(pathStack.Count>0)
@@ -169,6 +188,20 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
         CollectBFSTree(StartNode);
         return res;
     }
+    protected Stack<Point> StartPathFinding(Point Start, Point Target, int remainSteps)
+    {
+        queue = new Queue<BFSTree>();
+        traversedNodes = new HashSet<Point>();
+
+        BFSTree StartNode = getBFSTree(null, Start);
+        queue.Enqueue(StartNode);
+        traversedNodes.Add(Start);
+
+        var res = PathFinding(null, Target, remainSteps);
+        CollectBFSTree(StartNode);
+        return res;
+    }
+
     private Stack<Point> PathFinding(BFSTree StartNode, Point target)
     {
         while(queue.Count>0)
@@ -228,11 +261,99 @@ public abstract class BaseTurnBasedCharacter : MonoBehaviour
 
 
     }
+    private Stack<Point> PathFinding(BFSTree StartNode, Point target, int remainSteps)
+    {
+        while (queue.Count > 0)
+        {
+            BFSTree cur = queue.Dequeue();
+            Point curPoint = cur.Value;
+
+            if (!CheckGridWalkAvailable(cur.Value))
+            {
+                continue;
+            }
+
+            if (curPoint.Equals(target))
+            {
+                return CalculatePath(cur, remainSteps);
+            }
+
+            Point up = new Point(curPoint.X, curPoint.Y + 1);
+            Point left = new Point(curPoint.X - 1, curPoint.Y);
+            Point down = new Point(curPoint.X, curPoint.Y - 1);
+            Point right = new Point(curPoint.X + 1, curPoint.Y);
+
+            if (!traversedNodes.Contains(up))
+            {
+                traversedNodes.Add(up);
+                BFSTree upNode = getBFSTree(cur, up);
+                cur.Children.Add(upNode);
+                queue.Enqueue(upNode);
+            }
+
+            if (!traversedNodes.Contains(left))
+            {
+                traversedNodes.Add(left);
+                BFSTree leftNode = getBFSTree(cur, left);
+                cur.Children.Add(leftNode);
+                queue.Enqueue(leftNode);
+            }
+
+            if (!traversedNodes.Contains(down))
+            {
+                traversedNodes.Add(down);
+                BFSTree downNode = getBFSTree(cur, down);
+                cur.Children.Add(downNode);
+                queue.Enqueue(downNode);
+            }
+
+            if (!traversedNodes.Contains(right))
+            {
+                traversedNodes.Add(right);
+                BFSTree rightNode = getBFSTree(cur, right);
+                cur.Children.Add(rightNode);
+                queue.Enqueue(rightNode);
+            }
+        }
+        Debug.Log($"Pathfinding failed, can't find point{target}");
+        return null;
+
+
+    }
     private Stack<Point> CalculatePath(BFSTree lastNode)
     {
         Stack<Point> res = new Stack<Point>();
         res.Push(lastNode.Value);
         while(lastNode.Parent!=null)
+        {
+            lastNode = lastNode.Parent;
+            res.Push(lastNode.Value);
+        }
+        return res;
+    }
+
+    private Stack<Point> CalculatePath(BFSTree lastNode, int remainSteps)
+    {
+        Stack<Point> res = new Stack<Point>();
+        int totalLength = 0;
+        BFSTree curnode = lastNode;
+        //Calculate the route length to the target point, if longer than remainSteps, then remove the 
+        //exceeded nodes
+        while (curnode != null)
+        {
+            totalLength++;
+            curnode = curnode.Parent;
+        }
+        if(remainSteps < totalLength - 1)
+        {
+            for (int i = 0; i < totalLength - 1 - remainSteps; i++)
+            {
+                lastNode = lastNode.Parent;
+            }
+        }
+
+        res.Push(lastNode.Value);
+        while (lastNode.Parent != null)
         {
             lastNode = lastNode.Parent;
             res.Push(lastNode.Value);

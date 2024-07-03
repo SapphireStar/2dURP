@@ -99,28 +99,22 @@ public class AttackComponent : MonoBehaviour
         {
             return;
         }
-        if (attackPosTimer <= 0)
-        {
-            attackPosTimer = attackPosInterval;
-            ClearAttackPosPrefabs();
-            Point attackPoint = gridMap.GetPointViaPosition(pos);
-            Vector3 exactPos = gridMap.GetPositionViaPoint(attackPoint);
 
-            GameObject attackPos = Instantiate(AttackPosPrefab, exactPos, Quaternion.identity);
-            if (!CheckTargetInRange(attackPoint))
-            {
-                attackPos.GetComponent<SpriteRenderer>().color = colorAttackPosUnavailable;
-            }
-            else
-            {
-                attackPos.GetComponent<SpriteRenderer>().color = colorAttackPosAvailable;
-            }
-            attackPosPrefabs.Add(attackPos);
+        ClearAttackPosPrefabs();
+        Point attackPoint = gridMap.GetPointViaPosition(pos);
+        Vector3 exactPos = gridMap.GetPositionViaPoint(attackPoint);
+
+        GameObject attackPos = Instantiate(AttackPosPrefab, exactPos, Quaternion.identity);
+        if (!CheckTargetInRange(attackPoint))
+        {
+            attackPos.GetComponent<SpriteRenderer>().color = colorAttackPosUnavailable;
         }
         else
         {
-            attackPosTimer -= Time.deltaTime;
+            attackPos.GetComponent<SpriteRenderer>().color = colorAttackPosAvailable;
         }
+        attackPosPrefabs.Add(attackPos);
+
     }
 
     private bool CheckTargetInRange(Point target)
