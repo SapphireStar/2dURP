@@ -43,6 +43,7 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     // Update is called once per frame
     void Update()
     {
+        //Behaviors
         Movement();
         ClickUseSkill();
         ClickCancelSkill();
@@ -50,6 +51,9 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
         {
             ApplyPhysicalDamage(10);
         }
+
+        //Attack Component
+        DisplayAttackPos();
     }
     public override void Initialize()
     {
@@ -245,6 +249,11 @@ public class PlayerTurnBasedController : BaseTurnBasedCharacter
     #endregion
 
     #region Attack_System
+    private void DisplayAttackPos()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        m_attackComponent.DisplayAttackPos(mousePos);
+    }
     public override void SetSkillData(SkillData skillData)
     {
         //Click skill button means player want to attack

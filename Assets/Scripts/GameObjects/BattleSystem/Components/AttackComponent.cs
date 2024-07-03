@@ -29,13 +29,18 @@ public class AttackComponent : MonoBehaviour
     {
         character = GetComponent<BaseTurnBasedCharacter>();
         anim = GetComponent<Animator>();
+        if(anim == null)
+        {
+            anim = GetComponentInChildren<Animator>();
+        }
         rangeDisplayPrefabs = new List<GameObject>();
         attackPosPrefabs = new List<GameObject>();
         
     }
     public void Update()
     {
-        DisplayAttackPos();
+
+        
     }
     public void SetSkill(SkillData data)
     {
@@ -88,7 +93,7 @@ public class AttackComponent : MonoBehaviour
     /// <summary>
     /// Display the grids that can be effect by skill according to mouse position
     /// </summary>
-    public void DisplayAttackPos()
+    public void DisplayAttackPos(Vector3 pos)
     {
         if (!isAttacking)
         {
@@ -98,12 +103,11 @@ public class AttackComponent : MonoBehaviour
         {
             attackPosTimer = attackPosInterval;
             ClearAttackPosPrefabs();
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Point mousePoint = gridMap.GetPointViaPosition(mousePos);
-            Vector3 exactPos = gridMap.GetPositionViaPoint(mousePoint);
+            Point attackPoint = gridMap.GetPointViaPosition(pos);
+            Vector3 exactPos = gridMap.GetPositionViaPoint(attackPoint);
 
             GameObject attackPos = Instantiate(AttackPosPrefab, exactPos, Quaternion.identity);
-            if (!CheckTargetInRange(mousePoint))
+            if (!CheckTargetInRange(attackPoint))
             {
                 attackPos.GetComponent<SpriteRenderer>().color = colorAttackPosUnavailable;
             }
