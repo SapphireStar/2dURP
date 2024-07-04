@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5e373d802544f3b90f235c7efebe5e1, type: 3}
+  m_Name: New conversation
+  m_EditorClassIdentifier: 
+  version: 1.0
+  startNode:
+    <Guid>k__BackingField: f9f09150-af8f-4f4d-b337-cdb1cc420283
+    <NodeRect>k__BackingField:
+      serializedVersion: 2
+      x: 100
+      y: 100
+      width: 100
+      height: 100
+    name: Start
+  nodes:
+  - rid: 7321671121255006224
+  - rid: 7321671121255006225
+  - rid: 7321671121255006226
+  edges:
+  - rid: 7321671121255006227
+  - rid: 7321671121255006228
+  - rid: 7321671121255006229
+  properties:
+  - rid: 7321671121255006230
+  stickyNotes: []
+  groups: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 7321671121255006224
+      type: {class: LiteralStringNode, ns: Conversa.Runtime, asm: Conversa.Runtime}
+      data:
+        <Guid>k__BackingField: 7e0c4478-3fa9-4387-b96a-423895221341
+        <NodeRect>k__BackingField:
+          serializedVersion: 2
+          x: 322
+          y: 331
+          width: 80
+          height: 113
+        value: 
+    - rid: 7321671121255006225
+      type: {class: AdvancedMessageNode, ns: Conversa.Runtime.Nodes, asm: Conversa.Runtime}
+      data:
+        <Guid>k__BackingField: 4806d6b0-b8af-4bca-b477-5136c0093936
+        <NodeRect>k__BackingField:
+          serializedVersion: 2
+          x: 511
+          y: 82
+          width: 163
+          height: 185
+        actor: 
+        actorProfile: {fileID: 0}
+        message: 
+    - rid: 7321671121255006226
+      type: {class: ActorNode, ns: Conversa.Runtime.unity_conversa.Runtime.Nodes.Literals, asm: Conversa.Runtime}
+      data:
+        <Guid>k__BackingField: d166fb6d-3a5a-414a-a797-eaa49b34b12b
+        <NodeRect>k__BackingField:
+          serializedVersion: 2
+          x: -10
+          y: 219
+          width: 327
+          height: 107
+        actor: {fileID: 11400000, guid: 06b41fe3454509042af1ecd271aa9d87, type: 2}
+    - rid: 7321671121255006227
+      type: {class: EdgeData, ns: Conversa.Runtime, asm: Conversa.Runtime}
+      data:
+        output:
+          node: 7e0c4478-3fa9-4387-b96a-423895221341
+          port: out
+        input:
+          node: 4806d6b0-b8af-4bca-b477-5136c0093936
+          port: message
+    - rid: 7321671121255006228
+      type: {class: EdgeData, ns: Conversa.Runtime, asm: Conversa.Runtime}
+      data:
+        output:
+          node: d166fb6d-3a5a-414a-a797-eaa49b34b12b
+          port: out
+        input:
+          node: 4806d6b0-b8af-4bca-b477-5136c0093936
+          port: actor-profile
+    - rid: 7321671121255006229
+      type: {class: EdgeData, ns: Conversa.Runtime, asm: Conversa.Runtime}
+      data:
+        output:
+          node: f9f09150-af8f-4f4d-b337-cdb1cc420283
+          port: next
+        input:
+          node: 4806d6b0-b8af-4bca-b477-5136c0093936
+          port: previous
+    - rid: 7321671121255006230
+      type: {class: EventProperty, ns: Conversa.Runtime.Properties, asm: Conversa.Runtime}
+      data:
+        <Guid>k__BackingField: 6ff69217-f465-4be4-ac48-e79e05bd81a9
+        name: New event
